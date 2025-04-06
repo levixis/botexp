@@ -1,0 +1,13 @@
+Flask==2.2.2
+lyricsgenius==3.0.1
+fuzzywuzzy==0.18.0
+python-Levenshtein==0.20.9
+Zy31hHGwyHWgGusNTNpQnoSZQLJO4AvuuFTJBAK-KSBIGjGkfG8J_-rptg20PHVH
+GENIUS_ACCESS_TOKEN = 'Zy31hHGwyHWgGusNTNpQnoSZQLJO4AvuuFTJBAK-KSBIGjGkfG8J_-rptg20PHVH'
+SPOTIFY_CLIENT_IDS = {
+    'primary': '1f83046772594f539c242ff92aa3d04f'
+}
+SPOTIFY_CLIENT_SECRETS = {
+    'primary': '0d9bd89723454ee1a903b1d668d1cd4b'  # Replace with your actual secrets
+     
+}
