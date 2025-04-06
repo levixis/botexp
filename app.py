@@ -17,7 +17,7 @@ app.secret_key = os.urandom(24)  # Generate a random secret key for session mana
 
 # --- Configuration ---
 # Replace these placeholders with your actual API credentials
-GENIUS_ACCESS_TOKEN = 'Zy31hHGwyHWgGusNTNpQnoSZQLJO4AvuuFTJBAK-KSBIGjGkfG8J_-rptg20PHVH'
+GENIUS_ACCESS_TOKEN = 'KNO3CYd8TBY9jTtbTFU0JU9aWP4A7gkaZkNGat7Uny2d-08gv0QieJMf3S9ACVyAH9GMS1k45IEx7i_FSqOfZQ'
 SPOTIFY_CLIENT_ID = '1f83046772594f539c242ff92aa3d04f'
 SPOTIFY_CLIENT_SECRET = '0d9bd89723454ee1a903b1d668d1cd4b'
 
