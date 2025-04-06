@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: botexp
+    env: python
+    plan: free
+    region: oregon
+    repo: https://github.com/levixis/botexp
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
