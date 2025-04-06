@@ -109,15 +109,20 @@ def scrape_lyrics(url):
     if not url:
         return None
     try:
-        headers = {'User-Agent': 'Mozilla/5.0'}  # Mimic a browser to avoid blocking
-        response = requests.get(url, timeout=REQUEST_TIMEOUT, headers=headers)
+        session = requests.Session()
+        session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Referer': 'https://genius.com/'
+        })
+        response = session.get(url, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         lyrics_containers = soup.find_all('div', attrs={'data-lyrics-container': 'true'})
         if not lyrics_containers:
             return None
         lyrics = '\n\n'.join(
-            re.sub(r'\[.*?\]\n?', '', container.get_text(separator='\n').strip()).strip()  # Remove annotations
+            re.sub(r'\[.*?\]\n?', '', container.get_text(separator='\n').strip()).strip()
             for container in lyrics_containers
             if container.get_text().strip()
         )
