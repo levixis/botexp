@@ -1,34 +1,31 @@
-from flask import Flask, render_template, request, jsonify
-import requests
+import os
 import re
 import random
-from bs4 import BeautifulSoup
 import logging
-import os
+from flask import Flask, render_template, request, jsonify
+import requests
+from bs4 import BeautifulSoup
+import xml.etree.ElementTree as ET
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
-# Configure logging for debugging
+app = Flask(__name__)
+
+# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Initialize Flask app
-app = Flask(__name__)
-app.secret_key = os.urandom(24)  # Generate a random secret key for session management
-
-# --- Configuration ---
-# Replace these placeholders with your actual API credentials
-GENIUS_ACCESS_TOKEN = '0OxkecTVhkleqrTQi5DeW02HX6B4U83G1dvLkqxcYe6Yu7JFT5u1lx2Tw8HOwnlN'
+# API credentials
+GENIUS_ACCESS_TOKEN = 'Zy31hHGwyHWgGusNTNpQnoSZQLJO4AvuuFTJBAK-KSBIGjGkfG8J_-rptg20PHVH'
 SPOTIFY_CLIENT_ID = '1f83046772594f539c242ff92aa3d04f'
 SPOTIFY_CLIENT_SECRET = '0d9bd89723454ee1a903b1d668d1cd4b'
 
-GENIUS_API_URL = 'https://api.genius.com/search'
-REQUEST_TIMEOUT = 10  # Timeout for API requests in seconds
+# Initialize Spotify client
+sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
+    client_id=SPOTIFY_CLIENT_ID,
+    client_secret=SPOTIFY_CLIENT_SECRET
+))
 
-# Initialize Spotify client with Client Credentials Flow (no user authentication required)
-sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=SPOTIFY_CLIENT_ID, client_secret=SPOTIFY_CLIENT_SECRET))
-
-# --- Conversational Intents ---
-# Predefined responses for common user inputs
+# Conversational intents
 INTENTS = {
     r'\b(hello|hi|hey)\b': ['🎵 Hello! How can I help you with music today?'],
     r'\bhow are you\b': ['🤖 I\'m a bot, always ready to help with music!'],
@@ -37,162 +34,152 @@ INTENTS = {
     r'\b(bye|goodbye)\b': ['Goodbye! Enjoy the music! 🎵']
 }
 
-# --- Helper Functions ---
-
 def check_intent(message):
-    """Check if the message matches a conversational intent and return a response."""
     message_lower = message.lower()
     for pattern, responses in INTENTS.items():
         if re.search(pattern, message_lower, re.IGNORECASE):
-            logging.info(f"Matched intent: {pattern}")
             return random.choice(responses)
     return None
 
 def extract_song_info(text):
-    """Extract song title and artist from user input using regex patterns."""
     patterns = [
-        r'(?:lyrics for|find|get)?\s*(?P<title>.+?)\s+by\s+(?P<artist>.+)',  # e.g., "Lyrics for Song by Artist"
-        r'(?P<artist>.+?)\s+-\s+(?P<title>.+)',                             # e.g., "Artist - Song"
-        r'(?P<title>.+?)\s+-\s+(?P<artist>.+)',                             # e.g., "Song - Artist"
-        r'(?P<title>.+?)\s+by\s+(?P<artist>.+)',                            # e.g., "Song by Artist"
-        r'(?P<title>.+?)\s+from\s+(?P<artist>.+)',                          # e.g., "Song from Artist"
-        r'(?P<title>.+?)\s+lyrics\s*$',                                     # e.g., "Song lyrics"
-        r'(?P<title>.+?)\s+lyrics\s+for\s+(?P<artist>.+)',                  # e.g., "Song lyrics for Artist"
-        r'(?P<title>.+?)\s+by\s+(?P<artist>.+?)\s+lyrics\s*$',              # e.g., "Song by Artist lyrics"
-        r'(?P<title>.+?)\s+by\s+(?P<artist>.+?)\s*$',                       # e.g., "Song by Artist"
+        r'(?:lyrics for|find|get)?\s*(?P<title>.+?)\s+by\s+(?P<artist>.+)', #added optional "lyrics for" at the beginning
+        r'(?P<artist>.+?)\s+-\s+(?P<title>.+)', #artist first
+        r'(?P<title>.+?)\s+-\s+(?P<artist>.+)',
+        r'(?P<title>.+?)\s+by\s+(?P<artist>.+)',
+        r'(?P<title>.+?)\s+from\s+(?P<artist>.+)',
+        r'(?P<title>.+?)\s+lyrics\s*$',
+        r'(?P<title>.+?)\s+lyrics\s+for\s+(?P<artist>.+)',
+        r'(?P<title>.+?)\s+by\s+(?P<artist>.+?)\s+lyrics\s*$',
+        r'(?P<title>.+?)\s+by\s+(?P<artist>.+?)\s*$',
+        r'(?P<title>.+?)\s+from\s+(?P<artist>.+?)\s*$',
+        r'(?P<title>.+?)\s+by\s+(?P<artist>.+?)\s+lyrics\s*$',
+        r'(?P<title>.+?)\s+from\s+(?P<artist>.+?)\s+lyrics\s*$',
+        r'(?P<title>.+?)\s+lyrics\s*$',
+        r'(?P<title>.+?)\s+lyrics\s+for\s+(?P<artist>.+)',
+        r'(?P<title>.+?)\s+lyrics\s+by\s+(?P<artist>.+)',
     ]
     text_norm = text.strip()
     for pattern in patterns:
         match = re.search(pattern, text_norm, re.IGNORECASE)
         if match:
-            title = re.sub(r'^(lyrics for|lyrics|song)\s+', '', match.group('title').strip(), flags=re.IGNORECASE)
-            artist = re.sub(r'^(by|from)\s+', '', match.group('artist').strip(), flags=re.IGNORECASE)
-            if title and artist:
-                return title, artist
-    return text_norm, None  # Fallback: treat the whole input as song title if no artist is detected
+            title = re.sub(r'^(lyrics for|lyrics|song)\s+', '', match.group('title').strip(), re.IGNORECASE)
+            artist = re.sub(r'^(by|from)\s+', '', match.group('artist').strip(), re.IGNORECASE)
+            return title, artist
+    return text_norm, None
 
 def search_genius(song_name, artist_name=None):
     headers = {'Authorization': f'Bearer {GENIUS_ACCESS_TOKEN}'}
-    query = f"{song_name} {artist_name}" if artist_name else song_name
-    params = {'q': query}
+    params = {'q': f'{song_name} {artist_name}' if artist_name else song_name}
 
     try:
-        response = requests.get(GENIUS_API_URL, headers=headers, params=params, timeout=REQUEST_TIMEOUT)
+        response = requests.get('https://api.genius.com/search', headers=headers, params=params)
         response.raise_for_status()
         data = response.json()
 
-        hits = data.get('response', {}).get('hits', [])
-        for hit in hits:
-            if hit.get('type') != 'song':
-                continue
-            song_info = hit.get('result', {})
-            found_title = song_info.get('title', '').lower()
-            found_artist = song_info.get('primary_artist', {}).get('name', '').lower()
+        for hit in data.get('response', {}).get('hits', []):
+            if hit.get('type') == 'song':
+                song = hit.get('result', {})
+                primary_artist = song.get('primary_artist', {}).get('name', '').lower()
 
-            # Relaxed match
-            if song_name.lower() in found_title or found_title in song_name.lower():
-                if not artist_name or artist_name.lower() in found_artist:
-                    return {
-                        'url': song_info.get('url'),
-                        'title': song_info.get('title', 'Unknown Title'),
-                        'artist': song_info.get('primary_artist', {}).get('name', 'Unknown Artist'),
-                        'cover_art': song_info.get('header_image_thumbnail_url', song_info.get('song_art_image_thumbnail_url'))
-                    }
+                if artist_name and artist_name.lower() not in primary_artist:
+                    continue
+
+                # Get cover art from Genius with multiple fallbacks
+                cover_art = (
+                    song.get('header_image_thumbnail_url') or
+                    song.get('song_art_image_thumbnail_url') or
+                    song.get('song_art_image_url') or
+                    song.get('header_image_url') or
+                    ''
+                )
+
+                return {
+                    'url': song.get('url'),
+                    'title': song.get('title'),
+                    'artist': song.get('primary_artist', {}).get('name'),
+                    'cover_art': cover_art
+                }
         return None
     except Exception as e:
         logging.error(f"Genius API error: {e}")
         return None
 
-
 def scrape_lyrics(url):
-    """Scrape lyrics from a Genius song page."""
-    if not url:
-        return None
     try:
-        session = requests.Session()
-        session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Referer': 'https://genius.com/'
+        response = requests.get(url, headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
         })
-        response = session.get(url, timeout=REQUEST_TIMEOUT)
-        response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
-        lyrics_containers = soup.find_all('div', attrs={'data-lyrics-container': 'true'})
-        if not lyrics_containers:
-            return None
-        lyrics = '\n\n'.join(
-            re.sub(r'\[.*?\]\n?', '', container.get_text(separator='\n').strip()).strip()
-            for container in lyrics_containers
-            if container.get_text().strip()
-        )
-        return lyrics or None
+
+        # Try different lyric container selectors
+        lyrics_div = soup.find('div', class_='lyrics') or \
+                    soup.find('div', attrs={'data-lyrics-container': 'true'})
+
+        if lyrics_div:
+            lyrics = '\n'.join([div.get_text(separator='\n').strip() for div in lyrics_div])
+            return re.sub(r'\[.*?\]', '', lyrics).strip()
+        return None
     except Exception as e:
         logging.error(f"Lyrics scraping error: {e}")
         return None
 
 def search_spotify_track(song_name, artist_name=None):
-    """Search Spotify for a track using the song title and optional artist."""
     try:
-        query = f"{song_name} {artist_name}" if artist_name else song_name
-        results = sp.search(q=query, type='track', limit=1)  # Limit to 1 result for simplicity
-        tracks = results['tracks']['items']
-        if tracks:
+        results = sp.search(
+            q=f'{song_name} {artist_name}' if artist_name else song_name,
+            type='track',
+            limit=1
+        )
+        if tracks := results['tracks']['items']:
             track = tracks[0]
             return {
-                'spotify_album_art': track['album']['images'][0]['url'] if track['album']['images'] else None,
+                'album_art': track['album']['images'][0]['url'] if track['album']['images'] else None,
                 'preview_url': track.get('preview_url'),
                 'spotify_url': track['external_urls']['spotify']
             }
         return {}
     except Exception as e:
-        logging.error(f"Spotify search error: {e}")
+        logging.error(f"Spotify error: {e}")
         return {}
-
-# --- Routes ---
 
 @app.route('/')
 def index():
-    """Serve the main page."""
     return render_template('index.html')
 
 @app.route('/chat', methods=['POST'])
 def handle_chat():
-    """Handle incoming chat messages and return appropriate responses."""
     message = request.form.get('message', '').strip()
-    if not message:
-        return jsonify({'type': 'error', 'content': '⚠️ Please enter a message!'})
 
-    # Check for conversational intents first
+    if not message:
+        return jsonify({'type': 'error', 'content': 'Please enter a message!'})
+
     if intent_response := check_intent(message):
         return jsonify({'type': 'message', 'content': intent_response})
 
-    # Handle lyrics request
     song_name, artist_name = extract_song_info(message)
+    if not song_name:
+        return jsonify({'type': 'error', 'content': 'Please specify a song!'})
+
     genius_data = search_genius(song_name, artist_name)
     if not genius_data:
-        return jsonify({
-            'type': 'error',
-            'content': f"❌ Couldn't find '{song_name}'" + (f" by '{artist_name}'" if artist_name else "")
-        })
+        return jsonify({'type': 'error', 'content': 'Lyrics not found!'})
 
     lyrics = scrape_lyrics(genius_data['url'])
-    spotify_data = search_spotify_track(song_name, artist_name)
+    spotify_data = search_spotify_track(genius_data['title'], genius_data['artist'])
 
-    # Construct response with all available data
-    response = {
+    # Combine cover art sources
+    album_art = spotify_data.get('album_art') or genius_data.get('cover_art')
+
+    return jsonify({
         'type': 'lyrics',
         'title': genius_data['title'],
         'artist': genius_data['artist'],
-        'content': lyrics or '_(Lyrics unavailable)_',
-        'url': genius_data['url'],
-        'cover_art': genius_data['cover_art'],
-        'spotify_album_art': spotify_data.get('spotify_album_art'),
+        'content': lyrics or 'Lyrics unavailable',
+        'album_art': album_art,
         'preview_url': spotify_data.get('preview_url'),
         'spotify_url': spotify_data.get('spotify_url')
-    }
-    return jsonify(response)
+    })
 
-# --- Run the App ---
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

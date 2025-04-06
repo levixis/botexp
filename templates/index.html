@@ -487,49 +487,40 @@
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message', 'bot-message');
 
-            const coverArt = data.spotify_album_art || data.cover_art || 'placeholder_art.png';
-            const title = data.title || 'Unknown Title';
-            const artist = data.artist || 'Unknown Artist';
-            const lyrics = data.content || 'Lyrics content not available.';
-            const isLyricsUnavailable = lyrics.includes("Lyrics unavailable");
+            const coverArt = data.album_art || '/static/default-album.png';
 
-            let previewHTML = '';
-            if (data.preview_url) {
-                previewHTML = `
-                    <div class="audio-preview">
-                        <audio controls>
-                            <source src="${data.preview_url}" type="audio/mpeg">
-                            Your browser does not support audio playback.
-                        </audio>
-                        <span class="preview-note">30-second preview from Spotify</span>
-                    </div>
-                `;
-            }
+            // Modified preview section
+            const previewHTML = data.preview_url ? `
+                <div class="audio-preview">
+                    <audio controls>
+                        <source src="${data.preview_url}" type="audio/mpeg">
+                        Your browser does not support audio playback.
+                    </audio>
+                    <span class="preview-note">30-second preview from Spotify</span>
+                </div>
+            ` : '';
 
-            let spotifyLinkHTML = '';
-            if (data.spotify_url) {
-                spotifyLinkHTML = `
-                    <div class="spotify-link-container">
-                        <a href="${data.spotify_url}" target="_blank" class="spotify-link">
-                          Open in Spotify
-                        </a>
-                    </div>
-                `;
-            }
+            const spotifyLinkHTML = data.spotify_url ? `
+                <div class="spotify-link-container">
+                    <a href="${data.spotify_url}" target="_blank" class="spotify-link">
+                        Open in Spotify
+                    </a>
+                </div>
+            ` : '';
 
             messageDiv.innerHTML = `
                 <div class="lyrics-container">
                     <div class="lyrics-header">
                         <img src="${coverArt}" alt="Album art" class="album-art"
-                             onerror="this.onerror=null; this.src='placeholder_art.png'">
+                             onerror="this.src='/static/default-album.png'">
                         <div class="song-meta">
-                            <div class="song-title">${title}</div>
-                            <div class="artist-name">${artist}</div>
+                            <div class="song-title">${data.title}</div>
+                            <div class="artist-name">${data.artist}</div>
                         </div>
                     </div>
                     ${previewHTML}
-                    <div class="lyrics-content" ${isLyricsUnavailable ? 'style="opacity: 0.7;"' : ''}>
-                        ${lyrics}
+                    <div class="lyrics-content">
+                        ${data.content}
                     </div>
                     ${spotifyLinkHTML}
                 </div>
@@ -539,7 +530,6 @@
             chatMessages.appendChild(messageDiv);
             setTimeout(scrollToBottom, 50);
         }
-
         function removeLoadingIndicator() {
             if (loadingMessageElement && loadingMessageElement.parentNode) {
                 loadingMessageElement.style.transition = 'opacity 0.3s ease-out';
