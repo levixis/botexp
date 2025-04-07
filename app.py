@@ -8,8 +8,14 @@ from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+from pyngrok import ngrok  # Import ngrok
+from flask_cors import CORS
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app)
+CORS(app)
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -43,8 +49,8 @@ def check_intent(message):
 
 def extract_song_info(text):
     patterns = [
-        r'(?:lyrics for|find|get)?\s*(?P<title>.+?)\s+by\s+(?P<artist>.+)', #added optional "lyrics for" at the beginning
-        r'(?P<artist>.+?)\s+-\s+(?P<title>.+)', #artist first
+        r'(?:lyrics for|find|get)?\s*(?P<title>.+?)\s+by\s+(?P<artist>.+)',
+        r'(?P<artist>.+?)\s+-\s+(?P<title>.+)',
         r'(?P<title>.+?)\s+-\s+(?P<artist>.+)',
         r'(?P<title>.+?)\s+by\s+(?P<artist>.+)',
         r'(?P<title>.+?)\s+from\s+(?P<artist>.+)',
@@ -64,7 +70,7 @@ def extract_song_info(text):
         match = re.search(pattern, text_norm, re.IGNORECASE)
         if match:
             title = re.sub(r'^(lyrics for|lyrics|song)\s+', '', match.group('title').strip(), re.IGNORECASE)
-            artist = re.sub(r'^(by|from)\s+', '', match.group('artist').strip(), re.IGNORECASE)
+            artist = re.sub(r'^(by|from)\s+', '', match.group('artist').strip(), re.IGNORECASE) if match.groupdict().get('artist') else None
             return title, artist
     return text_norm, None
 
@@ -114,7 +120,7 @@ def scrape_lyrics(url):
 
         # Try different lyric container selectors
         lyrics_div = soup.find('div', class_='lyrics') or \
-                    soup.find('div', attrs={'data-lyrics-container': 'true'})
+                     soup.find('div', attrs={'data-lyrics-container': 'true'})
 
         if lyrics_div:
             lyrics = '\n'.join([div.get_text(separator='\n').strip() for div in lyrics_div])
@@ -182,4 +188,11 @@ def handle_chat():
     })
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Only run ngrok if developing locally
+    if os.environ.get('RAILWAY_ENVIRONMENT') is None:  # Not running on Railway
+        public_url = ngrok.connect(5000)
+        print(" * ngrok tunnel:", public_url)
+    
+    # Use Railway's PORT or fallback to 5000 for local development
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)  # Disable debug in production

@@ -1,0 +1,154 @@
+nohup: python: No such file or directory
+2025-04-07 09:50:19,490 - INFO - Opening tunnel named: http-5000-0493593d-aaa8-4d37-9fb0-6f67ade7a9f4
+Downloading ngrok ...Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/urllib/request.py", line 1344, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1331, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1377, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1326, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1085, in _send_output
+    self.send(msg)
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1029, in send
+    self.connect()
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/http/client.py", line 1472, in connect
+    self.sock = self._context.wrap_socket(self.sock,
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1042, in _create
+    self.do_handshake()
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/ssl.py", line 1320, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/pyngrok/installer.py", line 123, in install_ngrok
+    download_path = _download_file(url, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/pyngrok/installer.py", line 316, in _download_file
+    raise e
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/pyngrok/installer.py", line 274, in _download_file
+    response = urlopen(url, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/urllib/request.py", line 515, in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/urllib/request.py", line 532, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/urllib/request.py", line 1392, in https_open
+    return self.do_open(http.client.HTTPSConnection, req,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/urllib/request.py", line 1347, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)>
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/harshvardhanjha/Desktop/ai-lyrics-finder copy 2/app.py", line 187, in <module>
+    public_url = ngrok.connect(5000)
+                 ^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/pyngrok/ngrok.py", line 351, in connect
+    api_url = get_ngrok_process(pyngrok_config).api_url
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/pyngrok/ngrok.py", line 174, in get_ngrok_process
+    install_ngrok(pyngrok_config)
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/pyngrok/ngrok.py", line 99, in install_ngrok
+    installer.install_ngrok(pyngrok_config.ngrok_path, ngrok_version=pyngrok_config.ngrok_version)
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/pyngrok/installer.py", line 127, in install_ngrok
+    raise PyngrokNgrokInstallError(f"An error occurred while downloading ngrok from {url}: {e}")
+pyngrok.exception.PyngrokNgrokInstallError: An error occurred while downloading ngrok from https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-darwin-arm64.zip: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)>
+2025-04-07 09:51:16,444 - INFO - Opening tunnel named: http-5000-0d10dc91-c4b7-4e93-bd79-41cbcfb46f6d
+Downloading ngrok ...Downloading ngrok: 0%Downloading ngrok: 1%Downloading ngrok: 2%Downloading ngrok: 3%Downloading ngrok: 4%Downloading ngrok: 5%Downloading ngrok: 6%Downloading ngrok: 7%Downloading ngrok: 8%Downloading ngrok: 9%Downloading ngrok: 10%Downloading ngrok: 11%Downloading ngrok: 12%Downloading ngrok: 13%Downloading ngrok: 14%Downloading ngrok: 15%Downloading ngrok: 16%Downloading ngrok: 17%Downloading ngrok: 18%Downloading ngrok: 19%Downloading ngrok: 20%Downloading ngrok: 21%Downloading ngrok: 22%Downloading ngrok: 23%Downloading ngrok: 24%Downloading ngrok: 25%Downloading ngrok: 26%Downloading ngrok: 27%Downloading ngrok: 28%Downloading ngrok: 29%Downloading ngrok: 30%Downloading ngrok: 31%Downloading ngrok: 32%Downloading ngrok: 33%Downloading ngrok: 34%Downloading ngrok: 35%Downloading ngrok: 36%Downloading ngrok: 37%Downloading ngrok: 38%Downloading ngrok: 39%Downloading ngrok: 40%Downloading ngrok: 41%Downloading ngrok: 42%Downloading ngrok: 43%Downloading ngrok: 44%Downloading ngrok: 45%Downloading ngrok: 46%Downloading ngrok: 47%Downloading ngrok: 48%Downloading ngrok: 49%Downloading ngrok: 50%Downloading ngrok: 51%Downloading ngrok: 52%Downloading ngrok: 53%Downloading ngrok: 54%Downloading ngrok: 55%Downloading ngrok: 56%Downloading ngrok: 57%Downloading ngrok: 58%Downloading ngrok: 59%Downloading ngrok: 60%Downloading ngrok: 61%Downloading ngrok: 62%Downloading ngrok: 63%Downloading ngrok: 64%Downloading ngrok: 65%Downloading ngrok: 66%Downloading ngrok: 67%Downloading ngrok: 68%Downloading ngrok: 69%Downloading ngrok: 70%Downloading ngrok: 71%Downloading ngrok: 72%Downloading ngrok: 73%Downloading ngrok: 74%Downloading ngrok: 75%Downloading ngrok: 76%Downloading ngrok: 77%Downloading ngrok: 78%Downloading ngrok: 79%Downloading ngrok: 80%Downloading ngrok: 81%Downloading ngrok: 82%Downloading ngrok: 83%Downloading ngrok: 84%Downloading ngrok: 85%Downloading ngrok: 86%Downloading ngrok: 87%Downloading ngrok: 88%Downloading ngrok: 89%Downloading ngrok: 90%Downloading ngrok: 91%Downloading ngrok: 92%Downloading ngrok: 93%Downloading ngrok: 94%Downloading ngrok: 95%Downloading ngrok: 96%Downloading ngrok: 97%Downloading ngrok: 98%Downloading ngrok: 99%Downloading ngrok: 100%                                                                                                    Installing ngrok ...                                                                                                     2025-04-07 09:51:28,670 - INFO - t=2025-04-07T09:51:28+0530 lvl=info msg="no configuration paths supplied"
+2025-04-07 09:51:28,670 - INFO - t=2025-04-07T09:51:28+0530 lvl=info msg="using configuration at default config path" path="/Users/harshvardhanjha/Library/Application Support/ngrok/ngrok.yml"
+2025-04-07 09:51:28,670 - INFO - t=2025-04-07T09:51:28+0530 lvl=info msg="open config file" path="/Users/harshvardhanjha/Library/Application Support/ngrok/ngrok.yml" err=nil
+2025-04-07 09:51:28,671 - INFO - t=2025-04-07T09:51:28+0530 lvl=info msg="starting web service" obj=web addr=127.0.0.1:4040 allow_hosts=[]
+2025-04-07 09:51:33,634 - INFO - t=2025-04-07T09:51:33+0530 lvl=info msg="client session established" obj=tunnels.session
+2025-04-07 09:51:33,635 - INFO - t=2025-04-07T09:51:33+0530 lvl=info msg="tunnel session started" obj=tunnels.session
+2025-04-07 09:51:33,640 - INFO - t=2025-04-07T09:51:33+0530 lvl=info msg=start pg=/api/tunnels id=fe891772d9b6c3bf
+2025-04-07 09:51:33,640 - INFO - t=2025-04-07T09:51:33+0530 lvl=info msg=end pg=/api/tunnels id=fe891772d9b6c3bf status=200 dur=482.75µs
+2025-04-07 09:51:33,641 - INFO - t=2025-04-07T09:51:33+0530 lvl=info msg=start pg=/api/tunnels id=8ea46bfe6c746a12
+2025-04-07 09:51:33,641 - INFO - t=2025-04-07T09:51:33+0530 lvl=info msg=end pg=/api/tunnels id=8ea46bfe6c746a12 status=200 dur=158.916µs
+2025-04-07 09:51:33,642 - INFO - t=2025-04-07T09:51:33+0530 lvl=info msg=start pg=/api/tunnels id=57e16c0004b1d70c
+2025-04-07 09:51:33,671 - WARNING - t=2025-04-07T09:51:33+0530 lvl=warn msg="failed to check for update" obj=updater err="Post \"https://update.equinox.io/check\": context deadline exceeded"
+2025-04-07 09:51:33,829 - INFO - t=2025-04-07T09:51:33+0530 lvl=info msg="started tunnel" obj=tunnels name=http-5000-0d10dc91-c4b7-4e93-bd79-41cbcfb46f6d addr=http://localhost:5000 url=https://20e6-2409-40d1-102c-bd2-6cac-6775-b82-1030.ngrok-free.app
+2025-04-07 09:51:33,830 - INFO - t=2025-04-07T09:51:33+0530 lvl=info msg=end pg=/api/tunnels id=57e16c0004b1d70c status=201 dur=186.610125ms
+ * ngrok tunnel: NgrokTunnel: "https://20e6-2409-40d1-102c-bd2-6cac-6775-b82-1030.ngrok-free.app" -> "http://localhost:5000"
+ * Serving Flask app 'app'
+ * Debug mode: on
+Address already in use
+Port 5000 is in use by another program. Either identify and stop that program, or start the server with a different port.
+On macOS, try disabling the 'AirPlay Receiver' service from System Preferences -> General -> AirDrop & Handoff.
+2025-04-07 09:59:24,216 - INFO - Opening tunnel named: http-5000-aa2b0f2d-867c-491a-a3ca-8f1b31bfc1b9
+2025-04-07 09:59:24,270 - INFO - t=2025-04-07T09:59:24+0530 lvl=info msg="no configuration paths supplied"
+2025-04-07 09:59:24,270 - INFO - t=2025-04-07T09:59:24+0530 lvl=info msg="using configuration at default config path" path="/Users/harshvardhanjha/Library/Application Support/ngrok/ngrok.yml"
+2025-04-07 09:59:24,270 - INFO - t=2025-04-07T09:59:24+0530 lvl=info msg="open config file" path="/Users/harshvardhanjha/Library/Application Support/ngrok/ngrok.yml" err=nil
+2025-04-07 09:59:24,274 - INFO - t=2025-04-07T09:59:24+0530 lvl=info msg="starting web service" obj=web addr=127.0.0.1:4040 allow_hosts=[]
+2025-04-07 09:59:28,188 - INFO - t=2025-04-07T09:59:28+0530 lvl=info msg="client session established" obj=tunnels.session
+2025-04-07 09:59:28,188 - INFO - t=2025-04-07T09:59:28+0530 lvl=info msg="tunnel session started" obj=tunnels.session
+2025-04-07 09:59:28,233 - INFO - t=2025-04-07T09:59:28+0530 lvl=info msg=start pg=/api/tunnels id=214ccba7aa76d567
+2025-04-07 09:59:28,233 - INFO - t=2025-04-07T09:59:28+0530 lvl=info msg=end pg=/api/tunnels id=214ccba7aa76d567 status=200 dur=204.916µs
+2025-04-07 09:59:28,233 - INFO - t=2025-04-07T09:59:28+0530 lvl=info msg=start pg=/api/tunnels id=9fa5ebfe5f2ce0a1
+2025-04-07 09:59:28,233 - INFO - t=2025-04-07T09:59:28+0530 lvl=info msg=end pg=/api/tunnels id=9fa5ebfe5f2ce0a1 status=200 dur=75.75µs
+2025-04-07 09:59:28,234 - INFO - t=2025-04-07T09:59:28+0530 lvl=info msg=start pg=/api/tunnels id=5363467ad39fea1e
+2025-04-07 09:59:28,449 - INFO - t=2025-04-07T09:59:28+0530 lvl=info msg="started tunnel" obj=tunnels name=http-5000-aa2b0f2d-867c-491a-a3ca-8f1b31bfc1b9 addr=http://localhost:5000 url=https://e73c-2409-40d1-102c-bd2-6cac-6775-b82-1030.ngrok-free.app
+2025-04-07 09:59:28,450 - INFO - t=2025-04-07T09:59:28+0530 lvl=info msg=end pg=/api/tunnels id=5363467ad39fea1e status=201 dur=215.03325ms
+ * ngrok tunnel: NgrokTunnel: "https://e73c-2409-40d1-102c-bd2-6cac-6775-b82-1030.ngrok-free.app" -> "http://localhost:5000"
+ * Serving Flask app 'app'
+ * Debug mode: on
+Address already in use
+Port 5000 is in use by another program. Either identify and stop that program, or start the server with a different port.
+On macOS, try disabling the 'AirPlay Receiver' service from System Preferences -> General -> AirDrop & Handoff.
+2025-04-07 10:00:27,456 - INFO - Opening tunnel named: http-5000-7ceecf54-a00d-4d69-9538-fbd830e8c126
+2025-04-07 10:00:27,503 - INFO - t=2025-04-07T10:00:27+0530 lvl=info msg="no configuration paths supplied"
+2025-04-07 10:00:27,504 - INFO - t=2025-04-07T10:00:27+0530 lvl=info msg="using configuration at default config path" path="/Users/harshvardhanjha/Library/Application Support/ngrok/ngrok.yml"
+2025-04-07 10:00:27,504 - INFO - t=2025-04-07T10:00:27+0530 lvl=info msg="open config file" path="/Users/harshvardhanjha/Library/Application Support/ngrok/ngrok.yml" err=nil
+2025-04-07 10:00:27,506 - INFO - t=2025-04-07T10:00:27+0530 lvl=info msg="starting web service" obj=web addr=127.0.0.1:4040 allow_hosts=[]
+2025-04-07 10:00:33,437 - INFO - t=2025-04-07T10:00:33+0530 lvl=info msg="client session established" obj=tunnels.session
+2025-04-07 10:00:33,438 - INFO - t=2025-04-07T10:00:33+0530 lvl=info msg="tunnel session started" obj=tunnels.session
+2025-04-07 10:00:33,467 - INFO - t=2025-04-07T10:00:33+0530 lvl=info msg=start pg=/api/tunnels id=d60dcd19a6c8f23f
+2025-04-07 10:00:33,468 - INFO - t=2025-04-07T10:00:33+0530 lvl=info msg=end pg=/api/tunnels id=d60dcd19a6c8f23f status=200 dur=103.541µs
+2025-04-07 10:00:33,468 - INFO - t=2025-04-07T10:00:33+0530 lvl=info msg=start pg=/api/tunnels id=cc568ee9f4f768b1
+2025-04-07 10:00:33,468 - INFO - t=2025-04-07T10:00:33+0530 lvl=info msg=end pg=/api/tunnels id=cc568ee9f4f768b1 status=200 dur=25.625µs
+2025-04-07 10:00:33,468 - INFO - t=2025-04-07T10:00:33+0530 lvl=info msg=start pg=/api/tunnels id=e808c82e6bfb7913
+2025-04-07 10:00:33,804 - INFO - t=2025-04-07T10:00:33+0530 lvl=info msg="started tunnel" obj=tunnels name=http-5000-7ceecf54-a00d-4d69-9538-fbd830e8c126 addr=http://localhost:5000 url=https://0c2b-2409-40d1-102c-bd2-6cac-6775-b82-1030.ngrok-free.app
+2025-04-07 10:00:33,805 - INFO - t=2025-04-07T10:00:33+0530 lvl=info msg=end pg=/api/tunnels id=e808c82e6bfb7913 status=201 dur=334.723291ms
+ * ngrok tunnel: NgrokTunnel: "https://0c2b-2409-40d1-102c-bd2-6cac-6775-b82-1030.ngrok-free.app" -> "http://localhost:5000"
+ * Serving Flask app 'app'
+ * Debug mode: on
+Address already in use
+Port 5000 is in use by another program. Either identify and stop that program, or start the server with a different port.
+On macOS, try disabling the 'AirPlay Receiver' service from System Preferences -> General -> AirDrop & Handoff.
+2025-04-07 12:54:24,735 - INFO - Opening tunnel named: http-5000-fa1f2740-1a61-48d2-9f52-188364c285f4
+2025-04-07 12:54:24,796 - INFO - t=2025-04-07T12:54:24+0530 lvl=info msg="no configuration paths supplied"
+2025-04-07 12:54:24,796 - INFO - t=2025-04-07T12:54:24+0530 lvl=info msg="using configuration at default config path" path="/Users/harshvardhanjha/Library/Application Support/ngrok/ngrok.yml"
+2025-04-07 12:54:24,796 - INFO - t=2025-04-07T12:54:24+0530 lvl=info msg="open config file" path="/Users/harshvardhanjha/Library/Application Support/ngrok/ngrok.yml" err=nil
+2025-04-07 12:54:24,800 - INFO - t=2025-04-07T12:54:24+0530 lvl=info msg="starting web service" obj=web addr=127.0.0.1:4040 allow_hosts=[]
+2025-04-07 12:54:25,558 - INFO - t=2025-04-07T12:54:25+0530 lvl=info msg="client session established" obj=tunnels.session
+2025-04-07 12:54:25,558 - INFO - t=2025-04-07T12:54:25+0530 lvl=info msg="tunnel session started" obj=tunnels.session
+2025-04-07 12:54:25,594 - INFO - t=2025-04-07T12:54:25+0530 lvl=info msg=start pg=/api/tunnels id=66435115c0ccd069
+2025-04-07 12:54:25,594 - INFO - t=2025-04-07T12:54:25+0530 lvl=info msg=end pg=/api/tunnels id=66435115c0ccd069 status=200 dur=85.209µs
+2025-04-07 12:54:25,594 - INFO - t=2025-04-07T12:54:25+0530 lvl=info msg=start pg=/api/tunnels id=5fa8b2843cc516c9
+2025-04-07 12:54:25,595 - INFO - t=2025-04-07T12:54:25+0530 lvl=info msg=end pg=/api/tunnels id=5fa8b2843cc516c9 status=200 dur=25.292µs
+2025-04-07 12:54:25,595 - INFO - t=2025-04-07T12:54:25+0530 lvl=info msg=start pg=/api/tunnels id=4531c4efd604d96b
+2025-04-07 12:54:25,757 - INFO - t=2025-04-07T12:54:25+0530 lvl=info msg="started tunnel" obj=tunnels name=http-5000-fa1f2740-1a61-48d2-9f52-188364c285f4 addr=http://localhost:5000 url=https://bcea-112-196-62-7.ngrok-free.app
+2025-04-07 12:54:25,757 - INFO - t=2025-04-07T12:54:25+0530 lvl=info msg=end pg=/api/tunnels id=4531c4efd604d96b status=201 dur=161.811291ms
+ * ngrok tunnel: NgrokTunnel: "https://bcea-112-196-62-7.ngrok-free.app" -> "http://localhost:5000"
+ * Serving Flask app 'app'
+ * Debug mode: on
+Address already in use
+Port 5000 is in use by another program. Either identify and stop that program, or start the server with a different port.
+On macOS, try disabling the 'AirPlay Receiver' service from System Preferences -> General -> AirDrop & Handoff.
